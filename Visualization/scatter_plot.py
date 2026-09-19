@@ -1,9 +1,9 @@
 from matplotlib import pyplot as plt
-from util import get_csv
+from utils.util import get_csv
 
 
 def scatter_plot():
-    df = get_csv("csv/dataset_train.csv")
+    df = get_csv()
 
     num_df = df.select_dtypes(include=['number'])
     plt.scatter(df['Astronomy'], df['Defense Against the Dark Arts'], color='blue', label='train')

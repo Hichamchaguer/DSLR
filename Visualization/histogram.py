@@ -1,17 +1,34 @@
 import matplotlib.pyplot as plt
-from util import get_csv
+from utils.util import get_csv
+import sys
 
 
-def histogram():
+def histogram(df, feature, title, xlabel, ylabel):
 
-    df = get_csv("csv/dataset_train.csv")
+    houses = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
+    colors = ["red", "yellow", "blue", "green"]
 
-    df.hist(figsize=(15, 13), color='red', label='train')
-    plt.legend()
-    plt.tight_layout()
+    for house, color in zip(houses, colors):
+
+        values = df[df["Hogwarts House"] == house][feature]
+        values = values.dropna()
+
+        plt.hist(
+            values,
+            color=color,
+            alpha=0.5,
+            label=house
+        )
+
+    plt.legend(loc="upper right", frameon=False)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.show()
-    plt.close()
-
 
 if __name__ == "__main__":
-    histogram()
+    df = get_csv()
+    features = df.select_dtypes(include=["number"]).drop(columns=["Index"])
+    for feature in features.columns:
+        histogram(df, feature, feature, 'values', 'frequency')
+    # histogram(df, 'Astronomy', 'Astronomy', 'values', 'frequency')
