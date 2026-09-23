@@ -14,7 +14,7 @@ def scatter_plot():
     plt.tight_layout()
     plt.show()
     plt.close()
-
+  
 
 if __name__ == "__main__":
     scatter_plot()
