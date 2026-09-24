@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class LogisticRegression:
     
     def __init__(self, learning_rate=0.01, n_iterations=1000):
@@ -22,7 +21,14 @@ class LogisticRegression:
 
         return gradient
 
-    def fit(self, X, y):
+    def stochastic_GD(self, theta, X, y):
+        m = y.size
+
+        predictions = self.sigmoid(X @ theta)
+        gradient = X * (predictions - y)
+        return gradient
+
+    def fit(self, X, y, method="batch"):
 
         # Get the different houses
         self.classes = np.unique(y)
@@ -47,19 +53,34 @@ class LogisticRegression:
 
             for i in range(self.n_iterations):
 
-                # Calculate gradient
-                gradient = self.calculate_gradient(
-                    theta,
-                    X_b,
-                    y_binary
-                )
+                if method == "batch":
+                    # Calculate gradient
+                    gradient = self.calculate_gradient(
+                        theta,
+                        X_b,
+                        y_binary
+                    )
+                    theta -= self.learning_rate * gradient
+                    # Stop if gradient is very small
+                    if np.linalg.norm(gradient) < 1e-7:
+                        break
 
-                # Update theta
-                theta -= self.learning_rate * gradient
+                elif method == "SGD" or method == "sgd":
+                    indexs = np.random.permutation(len(X_b))
 
-                # Stop if gradient is very small
-                if np.linalg.norm(gradient) < 1e-7:
-                    break
+                    for index in indexs:
+
+                        x_i = X_b[index]
+                        y_i = y_binary[index]
+
+                        gradient = self.stochastic_GD(theta, x_i, y_i)
+
+                        # Update theta
+                        theta -= self.learning_rate * gradient
+
+                        # Stop if gradient is very small
+                        if np.linalg.norm(gradient) < 1e-7:
+                            break
 
             # Save theta for this house
             self.theta[class_index] = theta
@@ -87,7 +108,7 @@ class LogisticRegression:
 
         # Get the index of the highest probability
         class_index = np.argmax(probabilities, axis=1)
-
+        
         # Convert the index to the original house name
         return np.array(self.classes)[class_index]
 

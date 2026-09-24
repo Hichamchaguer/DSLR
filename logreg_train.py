@@ -11,12 +11,16 @@ import sys
 
 if __name__ == '__main__':
     
-    if len(sys.argv) != 2:
-        print("Usage: python describe.py <filename>.csv")
+    if len(sys.argv) != 3:
+        print("Usage: python logreg_train.py <path_to_csv> <method>")
         sys.exit(1)
 
     if not sys.argv[1].endswith(".csv"):
         print("Error: The file must be a CSV file.")
+        sys.exit(1)
+    
+    if not sys.argv[2] in ["batch", "SGD", "sgd"]:
+        print("Error: The method must be either 'batch' or 'SGD'.")
         sys.exit(1)
 
     df = pd.read_csv(sys.argv[1])
@@ -39,7 +43,7 @@ if __name__ == '__main__':
 
     # Train the logistic regression model
     model = LogisticRegression(learning_rate=0.01, n_iterations=1000)
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, method=sys.argv[2])
 
     # Make predictions on the test set
     y_pred = model.predict(X_test)
