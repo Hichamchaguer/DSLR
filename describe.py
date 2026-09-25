@@ -82,6 +82,11 @@ def get_missing_val(val, c):
         return c + 1
     return c
 
+def get_range(max, min):
+    if max is None or min is None:
+        return None
+    return max - min
+
 
 def main():
 
@@ -107,6 +112,7 @@ def main():
     q50 = {}
     q75 = {}
     missing_val = {}
+    _range = {}
     values = []
     for col in num_df.columns:
         c = 0
@@ -115,12 +121,14 @@ def main():
         max_val = None
         mean_val = 0
         m2 = 0
+        range = None
         for value in num_df[col]:
             values.append(value)
             c = get_count(value, c)
             c1 = get_missing_val(value, c1)
             min_val = get_min(value, min_val)
             mean_val, m2 = get_std(value, mean_val, c, m2)
+            range = get_range(max_val, min_val)
             if c > 1:
                 std_val = math.sqrt(m2 / (c - 1))
             else:
@@ -141,11 +149,12 @@ def main():
         q75[col] = q75_val
         max[col] = max_val
         missing_val[col] = c1
-    counts = pd.DataFrame([count, mean, std ,min, q25, q50, q75, max, missing_val], index=["count", 'mean', 'std', 'min', '25%', '50%', '75%', 'max', 'missing_val'])
+        _range[col] = range
+    counts = pd.DataFrame([count, mean, std ,min, q25, q50, q75, max, missing_val, _range], index=["count", 'mean', 'std', 'min', '25%', '50%', '75%', 'max', 'missing_val', 'range'])
 
     print(counts)
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    print(df.describe().drop(columns=['Index']))
+    # print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    # print(df.describe().drop(columns=['Index']))
 
 
 if __name__ == "__main__":
