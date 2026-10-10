@@ -47,7 +47,6 @@ if __name__ == '__main__':
 
     # Make predictions on the test set
     y_pred = model.predict(X_test)
-
     model.save_model(scaler)
     # Calculate the accuracy of the model
     accuracy = accuracy_score(y_test, y_pred)

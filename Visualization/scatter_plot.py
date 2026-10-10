@@ -6,6 +6,7 @@ def scatter_plot():
     df = get_csv()
 
     num_df = df.select_dtypes(include=['number'])
+    print(num_df.corr().drop(columns=['Index']))
     plt.scatter(df['Astronomy'], df['Defense Against the Dark Arts'], color='blue', label='train')
     plt.xlabel('Astronomy')
     plt.ylabel('Defense Against the Dark Arts')

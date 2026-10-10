@@ -13,17 +13,16 @@ class LogisticRegression:
         return 1.0 / (1.0 + np.exp(-z))
 
     def calculate_gradient(self, theta, X, y):
+
         m = y.size
-
         predictions = self.sigmoid(X @ theta)
-
         gradient = (X.T @ (predictions - y)) / m
 
         return gradient
 
     def stochastic_GD(self, theta, X, y):
-        m = y.size
 
+        m = y.size
         predictions = self.sigmoid(X @ theta)
         gradient = X * (predictions - y)
         return gradient
@@ -32,14 +31,17 @@ class LogisticRegression:
 
         # Get the different houses
         self.classes = np.unique(y)
+        # print(f"Classes: {self.classes}")
 
         # Add a column of 1s for the bias
         X_b = np.c_[np.ones((X.shape[0], 1)), X]
-
+        # print(f"X_b : {X_b}")
+        # print('=' * 50)
         # One theta for each house
         self.theta = np.zeros(
             (len(self.classes), X_b.shape[1])
         )
+        # print(f"theta : {self.theta}")
 
         # Train one binary classifier per house
         for class_index, class_name in enumerate(self.classes):
@@ -47,6 +49,8 @@ class LogisticRegression:
             # Current house = 1
             # Other houses = 0
             y_binary = (y == class_name).astype(int)
+            # print(f"y : {y}")
+            # print(y_binary, f"for class {class_name}")
 
             # Initialize theta for this house
             theta = np.zeros(X_b.shape[1])
@@ -60,6 +64,8 @@ class LogisticRegression:
                         X_b,
                         y_binary
                     )
+                    # print(gradient)
+                    # print('='*50)
                     theta -= self.learning_rate * gradient
                     # Stop if gradient is very small
                     if np.linalg.norm(gradient) < 1e-7:
@@ -105,28 +111,29 @@ class LogisticRegression:
     def predict(self, X):
 
         probabilities = self.predict_proba(X)
-
+        print(f"Probabilities: {probabilities}")
         # Get the index of the highest probability
         class_index = np.argmax(probabilities, axis=1)
-        
+        print('='   * 50)
+        print(f"Class index: {class_index}")
         # Convert the index to the original house name
         return np.array(self.classes)[class_index]
 
-    def save_model(self, scaler, filename="./csv/weights.csv"): 
+    def save_model(self, scaler, filename="./csv/weights.csv"):
         with open(filename, "w") as f:
-            # First line: class names + Mean + Std 
-            f.write(",".join(self.classes) + ",Mean,Std\n") 
-            # One row for each weight/feature 
-            for j in range(self.theta.shape[1]): 
-                # Save the weight of each house 
-                for i in range(self.theta.shape[0]): 
-                    f.write(str(self.theta[i][j])) 
-                    if i < self.theta.shape[0] - 1: 
-                        f.write(",") 
-                    # Bias does not have a mean/std 
-                if j == 0: 
-                    f.write(",,\n") 
+            # First line: class names + Mean + Std
+            f.write(",".join(self.classes) + ",Mean,Std\n")
+            # One row for each weight/feature
+            for j in range(self.theta.shape[1]):
+                # Save the weight of each house
+                for i in range(self.theta.shape[0]):
+                    f.write(str(self.theta[i][j]))
+                    if i < self.theta.shape[0] - 1:
+                        f.write(",")
+                    # Bias does not have a mean/std
+                if j == 0:
+                    f.write(",,\n")
                 # Features have mean/std
-                else: 
-                    f.write( f",{scaler.mean_[j - 1]},{scaler.std_[j - 1]}\n" ) 
+                else:
+                    f.write( f",{scaler.mean_[j - 1]},{scaler.std_[j - 1]}\n" )
         return self

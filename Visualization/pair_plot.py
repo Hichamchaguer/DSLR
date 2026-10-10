@@ -17,7 +17,7 @@ print('=' * 50)
 print(test.corr())
 plot_df = df[["Hogwarts House"] + test.columns.tolist()]
 
-sns.pairplot(
+sns.pairplot (
     plot_df,
     hue='Hogwarts House',
     diag_kind='kde',
